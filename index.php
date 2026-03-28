@@ -1,75 +1,72 @@
-<?php
-require $_SERVER['DOCUMENT_ROOT'].'/api/private/core.php';
-users::requireLoggedOut();
+<?php 
+require $_SERVER['DOCUMENT_ROOT'].'/api/private/core.php'; 
+if(!SESSION || SESSION && !SESSION["adminLevel"]){ pageBuilder::errorCode(404); }
 
-pageBuilder::$pageConfig["title"] = "Landing";
-pageBuilder::$pageConfig["includeNav"] = false;
+$servermemory = general::getServerMemoryUsage();
+$usersOnline = users::getUsersOnline();
+
+pageBuilder::$pageConfig["title"] = SITE_CONFIG["site"]["name"]." Administration";
 pageBuilder::buildHeader();
 ?>
-<style>
-body {
-    background: url(/img/skypanorama.png);
-    background-repeat: repeat-x;
-    background-attachment: fixed;
-    background-size: cover;
-    background-position: 0%;
-    color: white;
-}
-.nav-link { color: rgba(255,255,255,1); }
-</style>
-<h1 class="text-center"> <?=SITE_CONFIG["site"]["name"]?> </h1>
-<h2 class="text-center"> triple_t the one and only!!! </h2>
+
+<!--h1 style="position:absolute;opacity:0.5;font-size:10rem;z-index:10000000">THIS IS NOT <br> MULTAKOS SCREENSHOT LOL</h1-->
+
+<h1 class="font-weight-normal"><?=SITE_CONFIG["site"]["name"]?> Administration</h1>
 <div class="row">
-    <div class="col-sm-7 mt-5">
-        <div class="card bg-primary embed-responsive embed-responsive-4by3">
-            <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/<?=rand(0,1)?rand(0,1)?'L_d6UhKRZQ0':'09mUPgPXpy0':'nUHKOgHgQc4'?>?version=3&autoplay=1&controls=0&showinfo=0&loop=1" frameborder="0" allowfullscreen></iframe>
+  <div class="col-md-7 p-0 divider-right">
+    <div class="px-4 pr-4">
+      <h3 class="pb-2 font-weight-normal">Choose an action</h3>
+      <div class="row">
+      	<div class="col-sm-4">
+      		<!--a class="btn btn-outline-danger btn-lg w-100 px-0" href="moderate-user"><h2><i class="fal fa-gavel"></i></h2> User Moderation</a-->
+      	</div>
+      </div>
+      <div class="row">
+      	<div class="col-md-4 py-2">
+      		<a class="btn btn-outline-danger btn-lg w-100 px-0" href="moderate-user"><i class="fal fa-gavel"></i> User Moderation</a>
+      	</div>
+      	<div class="col-md-4 py-2">
+      		<a class="btn btn-outline-primary btn-lg w-100 px-0" href="staff-logs"><i class="fal fa-book"></i> Staff Logs</a>
+      	</div>
+      	<div class="col-md-4 py-2">
+      		<a class="btn btn-outline-primary btn-lg w-100 px-0" href="site-banners"><i class="fal fa-bullhorn"></i> Site banners</a>
+      	</div>
+        <?php if(SESSION["userId"] == 1){ ?>
+        <div class="col-md-4 py-2">
+          <a class="btn btn-outline-warning btn-lg w-100 px-0" href="give-currency"><i class="fal fa-pizza-slice"></i> Give Pizzas</a>
         </div>
+        <?php } ?>
+      </div>
     </div>
-    <div class="col-sm-5 mt-5">
-        <div class="card text-white bg-primary" style="background-color: rgba(0, 123, 255, 0.5)!important;">
-            <div class="card-header p-0 text-center">
-                <ul class="nav nav-tabs" id="myTab" role="tablist">
-                    <li class="nav-item" style="width:50%">
-                        <a class="nav-link active" id="signup-tab" data-toggle="tab" href="#signup" role="tab">Sign up</a>
-                    </li>
-                    <li class="nav-item" style="width:50%">
-                        <a class="nav-link" id="login-tab" data-toggle="tab" href="#login" role="tab">Log in</a>
-                    </li>
-                </ul>
-            </div>
-            <div class="card-body">
-                <div class="tab-content" id="myTabContent">
-                    <div class="tab-pane show active" id="signup" role="tabpanel">
-                        <form method="post" action="/register">
-                            <div class="form-group mb-1">
-                                <label for="username">Username</label>
-                                <input type="text" class="form-control" name="username" id="username" autocomplete="username">
-                                <small class="form-text">3 - 20 alphanumeric characters, no spaces or underscores.</small>
-                            </div>
-                            <div class="form-group mb-1">
-                                <label for="password">Password</label>
-                                <input type="password" class="form-control" name="password" id="password" autocomplete="new-password">
-                                <small class="form-text">8 - 64 characters, must have at least 6 characters and 2 numbers</small>
-                            </div>
-                            <div class="form-group">
-                                <label for="confirmpassword">Confirm Password</label>
-                                <input type="password" class="form-control" name="confirmpassword" id="confirmpassword">
-                            </div>
-                            <button type="submit" class="btn btn-lg btn-success btn-block">Sign Up</button>
-                        </form>
-                    </div>
-                    <div class="tab-pane" id="login" role="tabpanel">
-                        <form method="post" action="/login">
-                            <label for="username">Username</label>
-                            <input class="form-control mb-2" type="text" name="username" autocomplete="username">
-                            <label for="password">Password</label>
-                            <input class="form-control" type="password" name="password" autocomplete="current-password">
-                            <button type="submit" class="btn btn-success btn-lg btn-block mt-2">Log in</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
+  </div>
+  <div class="col-md-5 p-0">
+    <div class="px-4 pr-4">
+      <h3 class="pb-3 font-weight-normal">Website / Server Info and Status</h3>
+      <div class="card w-100 mt-2">
+    		<div class="card-body text-center">
+    			<h3 class="font-weight-normal"><i class="fal fa-server"></i> <?=PHP_OS?> / <?=gethostname()?></h3>
+    			<small><?=php_uname()?></small>
+    		</div>
+  	  </div>
+  	  <div class="card w-100 mt-2">
+    		<div class="card-body text-center">
+    			<h3 class="font-weight-normal"><i class="fal fa-memory"></i> <?=general::getNiceFileSize($servermemory->total-$servermemory->free)?> / <?=general::getNiceFileSize($servermemory->total)?> In Use</h3>
+    			<small><?=general::getNiceFileSize(memory_get_usage(true))?> is being used by PHP</small>
+    		</div>
+  	  </div>
+  	  <div class="card w-100 mt-2">
+    		<div class="card-body text-center">
+    			<h3 class="font-weight-normal"><i class="fal fa-hdd"></i> <?=general::getNiceFileSize(disk_total_space("B:")-disk_free_space("B:"))?> / <?=general::getNiceFileSize(disk_total_space("B:"))?> Used</h3>
+    			<small><?=SITE_CONFIG["site"]["name"]?> is using <?=general::getNiceFileSize(general::getFolderSize("B:\\nginx\\www\\alanbloxxr.ml\\avalanche"))?></small>
+    		</div>
+  	  </div>
+      <div class="card w-100 mt-2">
+        <div class="card-body text-center">
+          <h3 class="font-weight-normal"><i class="fal fa-user"></i> <?=$usersOnline?> user<?=$usersOnline>1?'s':''?> currently online</h3>
         </div>
+      </div>
     </div>
+  </div>
 </div>
+
 <?php pageBuilder::buildFooter(); ?>
